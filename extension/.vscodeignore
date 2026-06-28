@@ -1,0 +1,9 @@
+dist
+out
+*.vsix
+.vscode-test
+**/*.map
+**/*.d.ts
+node_modules
+.DS_Store
+*.log
