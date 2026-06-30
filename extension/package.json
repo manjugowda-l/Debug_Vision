@@ -11,8 +11,16 @@
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
   },
-  "categories": ["Debuggers", "Machine Learning"],
-  "keywords": ["debug", "debugging", "ai", "intelligent"],
+  "categories": [
+    "Debuggers",
+    "Machine Learning"
+  ],
+  "keywords": [
+    "debug",
+    "debugging",
+    "ai",
+    "intelligent"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/yourusername/debugvision.git"
@@ -20,15 +28,19 @@
   "main": "./dist/extension.js",
   "activationEvents": [
     "onStartupFinished",
-    //"onCommand:debugvision.helloWorld"
+    "onCommand:debugvision.helloWorld"
   ],
   "contributes": {
     "commands": [
-      {
-        "command": "debugvision.helloWorld",
-        "title": "DebugVision: Hello World"
-      }
-    ]
+  {
+    "command": "debugvision.helloWorld",
+    "title": "DebugVision: Hello World"
+  },
+  {
+    "command": "debugvision.startDebugSession",
+    "title": "🐞 DebugVision: Start AI Debug Session"
+  }
+]
   },
   "scripts": {
     "build": "tsc",
@@ -39,6 +51,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "axios": "^1.18.1",
     "debugvision-shared": "*"
   },
   "devDependencies": {
