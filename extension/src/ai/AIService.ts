@@ -1,14 +1,19 @@
+import * as vscode from "vscode";
 import { AIProvider } from "./AIProvider";
 import { PromptBuilder } from "./PromptBuilder";
 import { LoggerService } from "../services/LoggerService";
 import { OllamaProvider } from "./providers/OllamaProvider";
+
+
+
+export interface FixResponse {
+  canFix: boolean;
+  confidence: number;
+  fixedCode: string;
+  reason: string;
+}
 /**
  * Central AI service for DebugVision.
- *
- * Responsible for:
- * - Building prompts
- * - Talking to an AI provider
- * - Returning AI responses
  */
 export class AIService {
   private static instance: AIService;
@@ -16,11 +21,11 @@ export class AIService {
   private readonly logger = LoggerService.getInstance();
   private readonly promptBuilder = new PromptBuilder();
 
-  private provider: AIProvider ;
+  private provider: AIProvider;
 
   private constructor() {
-  this.provider = new OllamaProvider();
-}
+    this.provider = new OllamaProvider();
+  }
 
   public static getInstance(): AIService {
     if (!AIService.instance) {
@@ -30,9 +35,6 @@ export class AIService {
     return AIService.instance;
   }
 
-  /**
-   * Sets the active AI provider.
-   */
   public setProvider(provider: AIProvider): void {
     this.provider = provider;
 
@@ -41,25 +43,18 @@ export class AIService {
     );
   }
 
-  /**
-   * Returns the current provider.
-   */
   public getProvider(): AIProvider | undefined {
     return this.provider;
   }
 
-  /**
-   * Checks whether an AI provider has been configured.
-   */
   public hasProvider(): boolean {
     return true;
-}
+  }
+
   /**
-   * Sends the current workspace context to the AI.
+   * Existing project analysis.
    */
   public async analyzeCurrentFile(): Promise<string> {
-    
-
     const prompt = this.promptBuilder.buildDebugPrompt();
 
     this.logger.info("Sending prompt to AI...");
@@ -70,4 +65,67 @@ export class AIService {
 
     return response;
   }
+
+  /**
+   * Explains one diagnostic.
+   */
+  public async explainDiagnostic(
+    diagnostic: vscode.Diagnostic
+  ): Promise<string> {
+
+    const prompt =
+      this.promptBuilder.buildExplanationPrompt(diagnostic);
+
+    this.logger.info("Generating explanation...");
+
+    const response =
+      await this.provider.generateResponse(prompt);
+
+    this.logger.info("Explanation generated.");
+
+    return response;
+  }
+
+
+  /**
+ * Generates a fixed version of the current file.
+ */
+/**
+ * Generates an AI fix.
+ */
+public async generateFix(
+  diagnostic: vscode.Diagnostic
+): Promise<FixResponse> {
+
+  const prompt =
+    this.promptBuilder.buildFixPrompt(diagnostic);
+
+  this.logger.info("Generating AI fix...");
+
+  const response =
+    await this.provider.generateResponse(prompt);
+
+  this.logger.info("AI fix generated.");
+
+  try {
+
+    const clean = response
+      .replace(/^```json\s*/i, "")
+      .replace(/^```\s*/i, "")
+      .replace(/```$/i, "")
+      .trim();
+
+    return JSON.parse(clean) as FixResponse;
+
+  } catch {
+
+    return {
+      canFix: false,
+      confidence: 0,
+      fixedCode: "",
+      reason: "AI returned an invalid response."
+    };
+
+  }
+}
 }
