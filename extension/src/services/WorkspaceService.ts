@@ -6,7 +6,17 @@ export class WorkspaceService {
 
   private readonly logger = LoggerService.getInstance();
 
+  private activeDocument?: vscode.TextDocument;
+
+  private activeEditor?: vscode.TextEditor;
+
   private constructor() {}
+
+  public setActiveDocument(
+  document: vscode.TextDocument
+): void {
+  this.activeDocument = document;
+}
 
   public static getInstance(): WorkspaceService {
     if (!WorkspaceService.instance) {
@@ -45,7 +55,7 @@ export class WorkspaceService {
    * Returns the currently active document.
    */
   public getActiveDocument(): vscode.TextDocument | undefined {
-    return this.getActiveEditor()?.document;
+    return this.activeDocument;
   }
 
   /**
@@ -130,4 +140,20 @@ export class WorkspaceService {
   public getFileSize(): number {
     return this.getActiveFileContent()?.length ?? 0;
   }
+
+
+  public setActiveEditor(
+    editor: vscode.TextEditor
+): void {
+
+    this.activeEditor = editor;
+
+}
+
+public getStoredEditor():
+    vscode.TextEditor | undefined {
+
+    return this.activeEditor;
+
+}
 }

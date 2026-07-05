@@ -4,6 +4,7 @@ import { AIService } from "../ai";
 import { DebugSessionManager } from "../ai/DebugSessionManager";
 import { DebugPanel } from "../panels/DebugPanel";
 import { DiagnosticsService } from "../services/DiagnosticsService";
+import { WorkspaceService } from "../services/WorkspaceService";
 
 export class StartDebugSessionCommand {
   public register(): vscode.Disposable {
@@ -32,6 +33,14 @@ export class StartDebugSessionCommand {
         // Tell DiagnosticsService which file is being debugged
         DiagnosticsService.getInstance().setCurrentDocument(
           editor.document.uri
+        );
+
+        WorkspaceService.getInstance().setActiveDocument(
+          editor.document
+        );
+
+        WorkspaceService.getInstance().setActiveEditor(
+            editor
         );
 
         sessionManager.startSession();

@@ -76,7 +76,7 @@ export class AIService {
     const prompt =
       this.promptBuilder.buildExplanationPrompt(diagnostic);
 
-    this.logger.info("Generating explanation...");
+    this.logger.info("🤖 DebugVision AI is analyzing your code...");
 
     const response =
       await this.provider.generateResponse(prompt);
@@ -85,6 +85,27 @@ export class AIService {
 
     return response;
   }
+
+public async chatAboutDiagnostic(
+  diagnostic: vscode.Diagnostic,
+  question: string
+): Promise<string> {
+
+  const prompt =
+    this.promptBuilder.buildChatPrompt(
+      diagnostic,
+      question
+    );
+
+  this.logger.info("Generating chat response...");
+  this.logger.info(prompt);
+  const response =
+    await this.provider.generateResponse(prompt);
+
+  this.logger.info("Chat response generated.");
+
+  return response.trim();
+}
 
 
   /**
