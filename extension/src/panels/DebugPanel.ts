@@ -519,6 +519,29 @@ console.log("Confirm Fix button clicked");
     return;
 }
 
+const cancelBtn = target.closest(".cancel-fix-btn");
+
+if (cancelBtn) {
+
+    const content =
+        cancelBtn.closest(".content-panel");
+
+    if (content) {
+        content.innerHTML = "";
+        content.style.display = "none";
+    }
+
+    document
+        .querySelectorAll(
+            ".explain-btn,.apply-fix-btn,.chat-btn"
+        )
+        .forEach(btn =>
+            btn.classList.remove("active-btn")
+        );
+
+    return;
+}
+
 
     const explainBtn = target.closest(".explain-btn");
 
@@ -625,6 +648,30 @@ if (sendChatBtn) {
     return;
 }
 
+const closeExplanationBtn =
+    target.closest(".close-explanation-btn");
+
+if (closeExplanationBtn) {
+
+    const panel =
+        closeExplanationBtn.closest(".content-panel");
+
+    if (panel) {
+        panel.innerHTML = "";
+        panel.style.display = "none";
+    }
+
+
+
+    document
+        .querySelectorAll(".explain-btn")
+        .forEach(btn =>
+            btn.classList.remove("active-btn")
+        );
+
+    return;
+}
+
 
 });
 
@@ -665,8 +712,52 @@ window.addEventListener("message", (event) => {
     }
 
     div.style.display = "block";
-    div.innerHTML = message.explanation;
+    div.innerHTML = \`
+\${message.explanation}
 
+
+
+<div style="
+    display:flex;
+    justify-content:flex-end;
+    margin-top:20px;
+">
+
+    <button
+        class="close-explanation-btn"
+        style="
+            background:none;
+            border:none;
+            color:#9CDCFE;
+            cursor:pointer;
+            font-size:14px;
+        ">
+        ✕ Close
+    </button>
+
+</div>
+\`;
+
+const example = div.querySelector(".example-code");
+
+if (example) {
+
+    example.insertAdjacentHTML(
+        "beforebegin",
+        \`
+        <div class="code-header">
+            <span>Correct Example</span>
+
+            <button
+                class="copy-code-btn"
+                data-code="\${encodeURIComponent(example.textContent ?? "")}">
+                📋 Copy
+            </button>
+        </div>
+        \`
+    );
+
+}
 }
 
 

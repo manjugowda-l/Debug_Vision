@@ -119,21 +119,21 @@ Explain the correct approach.
 
 <h3>💡 Correct Example</h3>
 
-Return ONLY the corrected code snippet.
+Provide only the corrected code snippet.
 
-Do NOT write javascript.
-Do NOT write typescript.
-Do NOT use markdown code fences.
-Do NOT use triple backticks.
-Do NOT wrap the code in quotes.
-Return plain code only inside:
-Wrap the code inside:
+Return it exactly in this format:
 
+<div class="code-header">
+    <span>Correct Example</span>
+</div>
+
+<div class="example-code">
 <pre><code>
-
 ...
-
 </code></pre>
+</div>
+
+
 
 <h3>⭐ Best Practice</h3>
 
