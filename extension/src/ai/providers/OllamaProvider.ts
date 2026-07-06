@@ -6,7 +6,7 @@ import { AIProvider } from "../AIProvider";
  */
 export class OllamaProvider implements AIProvider {
   private readonly baseUrl = "http://127.0.0.1:11434";
-  private readonly model = "qwen2.5:3b";
+  private readonly model = "qwen2.5:7b";
 
   public async generateResponse(prompt: string): Promise<string> {
     try {

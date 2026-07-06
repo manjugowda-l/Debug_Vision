@@ -106,6 +106,42 @@ export class DebugPanel {
       return;
     }
 
+
+
+if (message.command === "globalChat") {
+
+    this.panel.webview.postMessage({
+        command: "globalChatLoading"
+    });
+
+    try {
+
+        const diagnostics =
+            this.diagnosticsService.getDiagnostics();
+
+        const response =
+            await AIService.getInstance().chatAboutWorkspace(
+                diagnostics,
+                message.question
+            );
+
+        this.panel.webview.postMessage({
+            command: "globalChatResponse",
+            response
+        });
+
+    } catch (error) {
+
+        vscode.window.showErrorMessage(
+            error instanceof Error
+                ? error.message
+                : "Failed to generate AI response."
+        );
+
+    }
+
+    return;
+}
 // ==========================
 // Chat
 // ==========================
@@ -279,11 +315,7 @@ if (message.command === "confirmFix") {
                 Apply Fix
             </button>
 
-            <button
-                  class="chat-btn"
-                  data-index="${index}">
-                  💬 Chat about this error
-              </button>
+            
 
               <div
                 id="content-${index}"
@@ -297,170 +329,343 @@ if (message.command === "confirmFix") {
           .join("")}
       `;
 
-    return `
-<!DOCTYPE html>
 
-<html>
+      const styles = `
+        <style>
+    body{
+        font-family:Segoe UI;
+        background:#1e1e1e;
+        color:white;
+        padding:20px;
+    }
 
-<head>
+    .card{
+        background:#2d2d30;
+        border-radius:10px;
+        padding:16px;
+        margin-top:15px;
+    }
 
-<meta charset="UTF-8">
+    button{
+        padding:8px 18px;
+        margin-top:12px;
+        margin-right:10px;
 
-<style>
+        border:none;
+        border-radius:6px;
 
-body{
-    font-family:Segoe UI;
-    background:#1e1e1e;
-    color:white;
-    padding:20px;
-}
+        cursor:pointer;
 
-.card{
-    background:#2d2d30;
-    border-radius:10px;
-    padding:16px;
-    margin-top:15px;
-}
+        font-size:14px;
+        font-weight:600;
 
-button{
-    padding:8px 18px;
-    margin-top:12px;
-    margin-right:10px;
-
-    border:none;
-    border-radius:6px;
-
-    cursor:pointer;
-
-    font-size:14px;
-    font-weight:600;
-
-    transition:0.2s;
-}
+        transition:0.2s;
+    }
 
 
-.explain-btn{
-    background:#007ACC;
-    color:white;
-}
+    .explain-btn{
+        background:#007ACC;
+        color:white;
+    }
 
-.explain-btn:hover{
-    background:#0E639C;
-}
+    .explain-btn:hover{
+        background:#0E639C;
+    }
 
-.apply-fix-btn{
-    background:#2EA043;
-    color:white;
-}
+    .apply-fix-btn{
+        background:#2EA043;
+        color:white;
+    }
 
-.apply-fix-btn:hover{
-    background:#238636;
-}
+    .apply-fix-btn:hover{
+        background:#238636;
+    }
 
-.chat-btn{
-    background:#7C3AED;
-    color:white;
-}
+    .chat-btn{
+        background:#7C3AED;
+        color:white;
+    }
 
-.chat-btn:hover{
-    background:#6D28D9;
-}
-
-
-button.active-btn{
-    outline:2px solid white;
-    transform:scale(1.03);
-    box-shadow:0 0 10px rgba(255,255,255,0.15);
-}
-
-.empty{
-    text-align:center;
-    margin-top:50px;
-}
-
-.content-panel{
-    margin-top:18px;
-    padding:20px;
-
-    background:#252526;
-
-    border-radius:10px;
-
-    border:1px solid #3C3C3C;
-
-    animation:fadeIn .2s ease-in-out;
-}
-
-.content-panel.hidden{
-    display:none !important;
-}
+    .chat-btn:hover{
+        background:#6D28D9;
+    }
 
 
-@keyframes fadeIn{
+    button.active-btn{
+        outline:2px solid white;
+        transform:scale(1.03);
+        box-shadow:0 0 10px rgba(255,255,255,0.15);
+    }
 
-from{
-    opacity:0;
-    transform:translateY(8px);
-}
+    .empty{
+        text-align:center;
+        margin-top:50px;
+    }
 
-to{
-    opacity:1;
-    transform:translateY(0);
-}
+    .content-panel{
+        margin-top:18px;
+        padding:20px;
 
-}
-pre{
-    background:#1E1E1E;
-    border-left:4px solid #007ACC;
-    border-radius:8px;
-    padding:14px;
-    overflow:auto;
-    white-space:pre-wrap;
-    font-family:Consolas,"Courier New",monospace;
-    font-size:13px;
-    line-height:1.6;
-    margin-top:10px;
-    margin-bottom:16px;
-}
+        background:#252526;
 
-code{
-    color:#DCDCAA;
-}
+        border-radius:10px;
 
-.code-header{
+        border:1px solid #3C3C3C;
+
+        animation:fadeIn .2s ease-in-out;
+    }
+
+    .content-panel.hidden{
+        display:none !important;
+    }
+
+
+    @keyframes fadeIn{
+
+    from{
+        opacity:0;
+        transform:translateY(8px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+    }
+    pre{
+        background:#1E1E1E;
+        border-left:4px solid #007ACC;
+        border-radius:8px;
+        padding:14px;
+        overflow:auto;
+        white-space:pre-wrap;
+        font-family:Consolas,"Courier New",monospace;
+        font-size:13px;
+        line-height:1.6;
+        margin-top:10px;
+        margin-bottom:16px;
+    }
+
+    code{
+        color:#DCDCAA;
+    }
+
+    .code-header{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-top:12px;
+        margin-bottom:8px;
+    }
+
+    .copy-code-btn{
+        background:#3C3C3C;
+        color:white;
+        border:none;
+        border-radius:6px;
+        padding:5px 10px;
+        cursor:pointer;
+        font-size:12px;
+    }
+
+    .copy-code-btn:hover{
+        background:#4A4A4A;
+    }
+
+    </style>
+    `;
+      const headerHtml = `
+          <div style="
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-top:12px;
-    margin-bottom:8px;
-}
+    margin-bottom:20px;
+">
 
-.copy-code-btn{
-    background:#3C3C3C;
-    color:white;
-    border:none;
-    border-radius:6px;
-    padding:5px 10px;
-    cursor:pointer;
-    font-size:12px;
-}
+    <h1 style="margin:0;">
+        🐞 DebugVision
+    </h1>
 
-.copy-code-btn:hover{
-    background:#4A4A4A;
-}
+    <button
+        id="toggle-ai-btn"
+        style="
+            background:#6C3CF0;
+            color:white;
+            border:none;
+            padding:8px 16px;
+            border-radius:8px;
+            cursor:pointer;
+            font-weight:bold;
+        ">
 
-</style>
+        🤖 Ask AI
 
-</head>
+    </button>
 
-<body>
+</div>
 
-<h2>🐞 DebugVision</h2>
 
-${diagnosticsHtml}
-<script>
 
-const vscode = acquireVsCodeApi();
+      `;
+      const diagnosticsPage = `
+<div id="diagnostics-page">
+
+    ${diagnosticsHtml}
+
+</div>
+`;
+      const chatPage = `
+      <div id="chat-page" style="display:none;">
+    
+<hr style="margin:30px 0;border-color:#444;">
+
+<div id="global-chat">
+
+
+<div style="
+    display:flex;
+    flex-direction:column;
+    height:calc(100vh - 180px);
+">
+
+    <div
+    id="chat-history"
+    style="
+        flex:1;
+        overflow-y:auto;
+        background:#252526;
+        border-radius:10px;
+        padding:18px;
+        margin-bottom:15px;
+    ">
+
+    <div id="chat-empty-state"
+        style="
+            text-align:center;
+            margin-top:50px;
+            color:#BBBBBB;
+        ">
+
+        <div style="
+            font-size:42px;
+            margin-bottom:12px;
+        ">
+            💬
+        </div>
+
+        <h3 style="
+            color:#4FC3F7;
+            margin-bottom:10px;
+        ">
+            Welcome to DebugVision AI
+        </h3>
+
+        <p style="line-height:1.8;">
+
+            Ask me anything about:
+
+            <br><br>
+
+            📄 Your current file
+
+            <br>
+
+            ❌ Compiler errors
+
+            <br>
+
+            🧠 Programming concepts
+
+            <br>
+
+            🛠 AI fix suggestions
+
+        </p>
+
+        <p style="
+            margin-top:25px;
+            opacity:.7;
+        ">
+            Start by typing a question below.
+        </p>
+
+    </div>
+
+</div>
+
+    <div style="
+        background:#252526;
+    border:1px solid #3C3C3C;
+    border-radius:12px;
+    padding:12px;
+    ">
+
+        <textarea
+    id="global-question"
+    rows="2"
+    style="
+        width:100%;
+        resize:none;
+        padding:14px 16px;
+        border:none;
+        border-radius:12px;
+        box-sizing:border-box;
+        background:#252526;
+        color:white;
+        font-size:14px;
+        font-family:Segoe UI;
+        outline:none;
+        line-height:1.5;
+    "
+    placeholder="Ask anything about your code..."></textarea>
+        <div style="
+            display:flex;
+            justify-content:flex-end;
+            margin-top:12px;
+        ">
+
+            <button id="global-send-btn">
+                Send
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+</div>
+</div>
+        `;
+        const scripts = `
+        <script>
+        const vscode = acquireVsCodeApi();
+
+
+document.addEventListener("keydown", (event) => {
+
+    const input =
+        document.getElementById("global-question");
+
+    if (!(input instanceof HTMLTextAreaElement)) {
+        return;
+    }
+
+    if (document.activeElement !== input) {
+        return;
+    }
+
+    if (event.key === "Enter" && !event.shiftKey) {
+
+        event.preventDefault();
+
+        document
+            .getElementById("global-send-btn")
+            ?.click();
+    }
+
+});
+
 function setActiveButton(button){
 
     document
@@ -481,7 +686,54 @@ document.addEventListener("click", (event) => {
         return;
     }
 
+   const askAiBtn = target.closest("#toggle-ai-btn");
 
+if (askAiBtn) {
+
+    const diagnosticsPage =
+    document.getElementById("diagnostics-page");
+
+const chatPage =
+    document.getElementById("chat-page");
+    if (!diagnosticsPage || !chatPage) {
+    return;
+}
+
+    if (!diagnosticsPage || !chatPage) {
+    return;
+}
+
+const isChatOpen =
+    chatPage.style.display === "block";
+
+if (!isChatOpen) {
+
+    diagnosticsPage.style.display = "none";
+
+    chatPage.style.display = "block";
+
+    askAiBtn.textContent = "← Back";
+
+    const input =
+        document.getElementById("global-question");
+
+    if (input instanceof HTMLTextAreaElement) {
+        input.focus();
+    }
+
+} else {
+
+    chatPage.style.display = "none";
+
+    diagnosticsPage.style.display = "block";
+
+    askAiBtn.textContent = "🤖 Ask AI";
+
+}
+
+    return;
+}
+    
     const copyBtn = target.closest(".copy-code-btn");
 
 if (copyBtn) {
@@ -606,6 +858,63 @@ setActiveButton(chatBtn);
     return;
 }
 
+const globalSendBtn = target.closest("#global-send-btn");
+
+if (globalSendBtn) {
+
+    const input =
+        document.getElementById("global-question");
+
+    if (!input || !input.value.trim()) {
+        return;
+    }
+
+    const history =
+        document.getElementById("chat-history");
+
+   history.innerHTML += \`
+<div style="
+    display:flex;
+justify-content:flex-end;
+margin:4px 0;
+    
+">
+
+    <div style="
+        display:inline-block;
+max-width:65%;
+width:auto;
+padding:4px 14px;
+border-radius:18px 18px 6px 18px;
+background:linear-gradient(135deg,#0E639C,#1177BB);
+box-shadow:0 4px 12px rgba(0,0,0,.25);
+color:white;
+white-space:pre-wrap;
+word-break:break-word;
+line-height:1.2;
+font-size:15px;
+    ">
+
+        \${input.value}
+
+    </div>
+
+</div>
+\`;
+
+    vscode.postMessage({
+
+    command: "globalChat",
+
+    question: input.value.trim()
+
+});
+
+    input.value = "";
+
+    return;
+}
+
 const sendChatBtn = target.closest(".send-chat-btn");
 
 if (sendChatBtn) {
@@ -674,6 +983,8 @@ if (closeExplanationBtn) {
 
 
 });
+
+
 
 window.addEventListener("message", (event) => {
 
@@ -896,10 +1207,144 @@ if (message.command === "chatResponse") {
     \`;
 }
 
+if (message.command === "globalChatLoading") {
+
+    const history =
+        document.getElementById("chat-history");
+
+    if (!history) {
+        return;
+    }
+
+    history.innerHTML += \`
+<div
+    id="ai-loading"
+    style="
+        display:flex;
+        justify-content:flex-start;
+        margin:20px 0;
+    ">
+
+    <div style="
+        max-width:80%;
+        background:#2D2D30;
+        border:1px solid #3E3E42;
+        border-left:4px solid #4FC3F7;
+        padding:16px;
+        border-radius:18px 18px 18px 6px;
+    ">
+
+        <div style="
+            color:#4FC3F7;
+            font-size:12px;
+            font-weight:bold;
+            margin-bottom:10px;
+        ">
+            🤖 DEBUGVISION AI
+        </div>
+
+        <div style="
+            color:#BBBBBB;
+            font-style:italic;
+        ">
+            Thinking...
+        </div>
+
+    </div>
+
+</div>
+\`;
+
+    history.scrollTop = history.scrollHeight;
+}
+
+if (message.command === "globalChatResponse") {
+
+    const history =
+        document.getElementById("chat-history");
+
+    if (!history) {
+        return;
+    }
+
+    const loading =
+        document.getElementById("ai-loading");
+
+
+    if (!loading) {
+    return;
+}
+
+
+    loading.outerHTML = \`
+<div
+    style="
+        display:flex;
+        justify-content:flex-start;
+        margin:20px 0;
+    ">
+
+    <div style="
+        max-width:80%;
+        background:#2D2D30;
+        border:1px solid #3E3E42;
+        border-left:4px solid #4FC3F7;
+        padding:16px;
+        border-radius:18px 18px 18px 6px;
+    ">
+
+        <div style="
+            color:#4FC3F7;
+            font-size:12px;
+            font-weight:bold;
+            margin-bottom:10px;
+        ">
+            🤖 DEBUGVISION AI
+        </div>
+
+        <div style="
+            white-space:pre-wrap;
+            line-height:1.75;
+        ">
+            \${message.response}
+        </div>
+
+    </div>
+
+</div>
+\`;
+
+    history.scrollTop = history.scrollHeight;
+}
 
 });
 
 </script>
+
+      `;
+    return `
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+${styles}
+
+</head>
+
+<body>
+
+${headerHtml}
+
+${diagnosticsPage}
+
+${chatPage}
+
+${scripts}
+
 </body>
 
 </html>

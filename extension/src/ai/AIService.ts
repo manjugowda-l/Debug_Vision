@@ -108,6 +108,31 @@ public async chatAboutDiagnostic(
 }
 
 
+public async chatAboutWorkspace(
+    diagnostics: vscode.Diagnostic[],
+    question: string
+): Promise<string> {
+
+    const prompt =
+        this.promptBuilder.buildWorkspaceChatPrompt(
+            diagnostics,
+            question
+        );
+
+    this.logger.info(
+        "Generating workspace chat response..."
+    );
+
+    const response =
+        await this.provider.generateResponse(prompt);
+
+    this.logger.info(
+        "Workspace chat response generated."
+    );
+
+    return response;
+}
+
   /**
  * Generates a fixed version of the current file.
  */
