@@ -473,10 +473,94 @@ if (message.command === "confirmFix") {
         background:#4A4A4A;
     }
 
+
+    .typing-dots{
+    display:flex;
+    gap:6px;
+    align-items:center;
+}
+
+.typing-dots span{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#4FC3F7;
+    animation:typingBounce 1.2s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(2){
+    animation-delay:.2s;
+}
+
+.typing-dots span:nth-child(3){
+    animation-delay:.4s;
+}
+
+@keyframes typingBounce{
+
+    0%,80%,100%{
+        transform:scale(.6);
+        opacity:.5;
+    }
+
+    40%{
+        transform:scale(1);
+        opacity:1;
+    }
+
+}
+
     </style>
     `;
-      const headerHtml = `
-          <div style="
+//      const headerHtml = `
+//          <div style="
+//    display:flex;
+//    justify-content:space-between;
+//    align-items:center;
+//    margin-bottom:20px;
+//">
+  
+
+//   <div
+//    id="header-left"
+//    style="
+//        display:flex;
+//        align-items:center;
+//    ">
+//</div>
+//    <button
+//        id="toggle-ai-btn"
+//        style="
+//            background:#6C3CF0;
+//            color:white;
+//            border:none;
+//            padding:8px 16px;
+//            border-radius:8px;
+//            cursor:pointer;
+//            font-weight:bold;
+//        ">
+
+//        🤖 Ask AI
+
+//    </button>
+
+//</div>
+
+
+
+//      `;
+      const diagnosticsPage = `
+<div id="diagnostics-page">
+
+    ${diagnosticsHtml}
+
+</div>
+`;
+
+    const diagnosticsHeader = `
+<div
+id="diagnostics-header"
+style="
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -504,19 +588,122 @@ if (message.command === "confirmFix") {
     </button>
 
 </div>
+`;
 
+const chatHeader = `
+<div
+id="chat-header"
+style="display:none;
+    
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+">
 
+    <div style="
+        display:flex;
+        align-items:center;
+        gap:12px;
+    ">
 
-      `;
-      const diagnosticsPage = `
-<div id="diagnostics-page">
+        <button
+            id="menu-btn"
+            style="
+                background:none;
+                border:none;
+                color:white;
+                font-size:22px;
+                cursor:pointer;
+            ">
+            ☰
+        </button>
 
-    ${diagnosticsHtml}
+        <h1 style="margin:0;">
+            🐞 DebugVision
+        </h1>
+
+    </div>
+
+    <button
+        id="back-btn"
+        style="
+            background:#6C3CF0;
+            color:white;
+            border:none;
+            padding:8px 16px;
+            border-radius:8px;
+            cursor:pointer;
+            font-weight:bold;
+        ">
+
+        ← Back
+
+    </button>
 
 </div>
 `;
+
+
       const chatPage = `
       <div id="chat-page" style="display:none;">
+
+      <div
+    id="chat-sidebar"
+    style="
+        position:fixed;
+        top:0;
+        left:-260px;
+        width:250px;
+        height:100%;
+        background:#252526;
+        border-right:1px solid #3C3C3C;
+        transition:left .25s ease;
+        z-index:999;
+        padding:20px;
+        box-sizing:border-box;
+    ">
+
+   <div style="
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:20px;
+">
+
+    <button
+        id="close-sidebar-btn"
+        style="
+            background:none;
+            border:none;
+            color:white;
+            font-size:18px;
+            cursor:pointer;
+        ">
+        ←
+    </button>
+
+    <h3 style="margin:0;">
+        Chats
+    </h3>
+
+</div>
+    <button
+        id="new-chat-btn"
+        style="
+            width:100%;
+            margin-top:20px;
+            padding:10px;
+            background:#6C3CF0;
+            color:white;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            font-weight:bold;
+        ">
+        ➕ New Chat
+    </button>
+
+</div>
     
 <hr style="margin:30px 0;border-color:#444;">
 
@@ -640,7 +827,7 @@ if (message.command === "confirmFix") {
         const scripts = `
         <script>
         const vscode = acquireVsCodeApi();
-
+        
 
 document.addEventListener("keydown", (event) => {
 
@@ -686,6 +873,57 @@ document.addEventListener("click", (event) => {
         return;
     }
 
+
+    const menuBtn = target.closest("#menu-btn");
+
+if (menuBtn) {
+
+    const sidebar =
+        document.getElementById("chat-sidebar");
+
+    if (!sidebar) {
+        return;
+    }
+
+    sidebar.style.left =
+        sidebar.style.left === "0px"
+            ? "-260px"
+            : "0px";
+
+    return;
+}
+
+
+const closeSidebarBtn =
+    target.closest("#close-sidebar-btn");
+
+if (closeSidebarBtn) {
+
+    const sidebar =
+        document.getElementById("chat-sidebar");
+
+    if (sidebar) {
+
+        sidebar.style.left = "-260px";
+
+    }
+
+    return;
+}
+
+const backBtn = target.closest("#back-btn");
+
+if (backBtn) {
+
+    document.getElementById("chat-page").style.display = "none";
+    document.getElementById("diagnostics-page").style.display = "block";
+
+    document.getElementById("chat-header").style.display = "none";
+    document.getElementById("diagnostics-header").style.display = "flex";
+
+    return;
+}
+
    const askAiBtn = target.closest("#toggle-ai-btn");
 
 if (askAiBtn) {
@@ -711,8 +949,11 @@ if (!isChatOpen) {
     diagnosticsPage.style.display = "none";
 
     chatPage.style.display = "block";
+    document.getElementById("diagnostics-header").style.display = "none";
+document.getElementById("chat-header").style.display = "flex";
+    
 
-    askAiBtn.textContent = "← Back";
+   
 
     const input =
         document.getElementById("global-question");
@@ -726,9 +967,10 @@ if (!isChatOpen) {
     chatPage.style.display = "none";
 
     diagnosticsPage.style.display = "block";
-
-    askAiBtn.textContent = "🤖 Ask AI";
-
+    document.getElementById("chat-header").style.display = "none";
+document.getElementById("diagnostics-header").style.display = "flex";
+    
+    
 }
 
     return;
@@ -987,7 +1229,6 @@ if (closeExplanationBtn) {
 
 
 window.addEventListener("message", (event) => {
-
     const message = event.data;
 
     if (message.command === "loading") {
@@ -1244,11 +1485,29 @@ if (message.command === "globalChatLoading") {
         </div>
 
         <div style="
-            color:#BBBBBB;
-            font-style:italic;
-        ">
-            Thinking...
-        </div>
+    display:flex;
+    align-items:center;
+    gap:10px;
+">
+
+    <span style="
+        color:#BBBBBB;
+        font-size:14px;
+    ">
+        Thinking
+    </span>
+
+    <div class="typing-dots">
+
+        <span></span>
+
+        <span></span>
+
+        <span></span>
+
+    </div>
+
+</div>
 
     </div>
 
@@ -1337,7 +1596,9 @@ ${styles}
 
 <body>
 
-${headerHtml}
+${diagnosticsHeader}
+
+${chatHeader}
 
 ${diagnosticsPage}
 
