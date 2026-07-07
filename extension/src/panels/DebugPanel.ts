@@ -831,6 +831,26 @@ style="display:none;
 
 document.addEventListener("keydown", (event) => {
 
+
+    if (event.key === "Escape") {
+
+    const sidebar =
+        document.getElementById("chat-sidebar");
+
+    if (
+        sidebar &&
+        sidebar.style.left === "0px"
+    ) {
+
+        sidebar.style.left = "-270px";
+
+        event.preventDefault();
+    }
+
+    return;
+}
+
+
     const input =
         document.getElementById("global-question");
 
@@ -892,6 +912,18 @@ if (menuBtn) {
 
     return;
 }
+
+const sidebar = document.getElementById("chat-sidebar");
+
+if (
+    sidebar &&
+    sidebar.style.left === "0px" &&
+    !target.closest("#chat-sidebar") &&
+    !target.closest("#menu-btn")
+) {
+    sidebar.style.left = "-270px";
+}
+
 
 
 const closeSidebarBtn =
