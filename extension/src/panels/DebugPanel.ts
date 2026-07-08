@@ -840,9 +840,8 @@ style="display:none;
         ">
 
             <button id="global-send-btn">
-                Send
-            </button>
-
+    ➤ Send
+</button>
         </div>
 
     </div>
@@ -858,6 +857,8 @@ style="display:none;
 
 let chatHistory = [];
 let activeChatId = null;
+let isGenerating = false;
+let stopRequested = false;
 function createNewChat() {
 
     currentChat = {
@@ -1435,6 +1436,16 @@ setActiveButton(chatBtn);
 const globalSendBtn = target.closest("#global-send-btn");
 
 if (globalSendBtn) {
+if (isGenerating) {
+
+    stopRequested = true;
+
+    isGenerating = false;
+
+    globalSendBtn.textContent = "➤ Send";
+
+    return;
+}
 
     const input =
         document.getElementById("global-question");
@@ -1474,6 +1485,9 @@ if (!exists) {
     renderChatHistory();
 
 }
+    isGenerating = true;
+
+globalSendBtn.textContent = "■ Stop";
     vscode.postMessage({
 
     command: "globalChat",
@@ -1848,7 +1862,17 @@ if (message.command === "globalChatLoading") {
 }
 
 if (message.command === "globalChatResponse") {
+    if (stopRequested) {
 
+    stopRequested = false;
+
+    const loading =
+        document.getElementById("ai-loading");
+
+    loading?.remove();
+
+    return;
+}
     const history =
         document.getElementById("chat-history");
 
@@ -1876,6 +1900,16 @@ if (message.command === "globalChatResponse") {
 
 });
     history.scrollTop = history.scrollHeight;
+isGenerating = false;
+
+const sendBtn =
+    document.getElementById("global-send-btn");
+
+if (sendBtn instanceof HTMLButtonElement) {
+
+    sendBtn.textContent = "➤ Send";
+
+}
 }
 
 });
