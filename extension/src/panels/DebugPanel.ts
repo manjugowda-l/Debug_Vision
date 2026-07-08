@@ -840,9 +840,25 @@ style="display:none;
         const scripts = `
         <script>
         const vscode = acquireVsCodeApi();
-        let currentChat = [];
+        let currentChat = null;
 
 let chatHistory = [];
+function createNewChat() {
+
+    currentChat = {
+
+        id: Date.now(),
+
+        title: "",
+
+        messages: []
+
+    };
+
+}
+
+createNewChat();
+
 function getWelcomeScreen() {
 
     return \`
@@ -900,6 +916,77 @@ function getWelcomeScreen() {
 \`;
 }
 
+function createUserMessage(text) {
+
+    return \`
+<div style="
+    display:flex;
+    justify-content:flex-end;
+    margin:20px 0;
+">
+
+    <div style="
+        max-width:80%;
+        background:linear-gradient(135deg,#0E639C,#1177BB);
+        color:white;
+        padding:14px 16px;
+        border-radius:18px 18px 6px 18px;
+    ">
+
+        <div style="
+            white-space:pre-wrap;
+            line-height:1.6;
+        ">
+            \${text}
+        </div>
+
+    </div>
+
+</div>
+\`;
+
+}
+
+function createAIMessage(text) {
+
+    return \`
+<div
+    style="
+        display:flex;
+        justify-content:flex-start;
+        margin:20px 0;
+    ">
+
+    <div style="
+        max-width:80%;
+        background:#2D2D30;
+        border:1px solid #3E3E42;
+        border-left:4px solid #4FC3F7;
+        padding:16px;
+        border-radius:18px 18px 18px 6px;
+    ">
+
+        <div style="
+            color:#4FC3F7;
+            font-size:12px;
+            font-weight:bold;
+            margin-bottom:10px;
+        ">
+            🤖 DEBUGVISION AI
+        </div>
+
+        <div style="
+            white-space:pre-wrap;
+            line-height:1.75;
+        ">
+            \${text}
+        </div>
+
+    </div>
+
+</div>
+\`;
+}
 
 function renderChatHistory() {
 
@@ -1062,18 +1149,24 @@ const newChatBtn = target.closest("#new-chat-btn");
 if (newChatBtn) {
 
     // Save current chat only if it has messages
-    if (currentChat.length > 0) {
+    
+if (currentChat.messages.length > 0) {
 
-        chatHistory.push({
-            id: Date.now(),
-            title: currentChat[0].content,
-            messages: [...currentChat]
-        });
-        renderChatHistory();
+    const exists = chatHistory.find(
+        chat => chat.id === currentChat.id
+    );
+
+    if (!exists) {
+
+        chatHistory.push(currentChat);
 
     }
 
-    currentChat = [];
+    renderChatHistory();
+
+}
+
+    createNewChat();
 
     const history =
         document.getElementById("chat-history");
@@ -1087,6 +1180,47 @@ if (newChatBtn) {
 document.getElementById("global-question")?.focus();
 
     return;
+}
+
+
+const historyItem = target.closest(".history-item");
+
+if (historyItem) {
+
+    const id = Number(historyItem.dataset.id);
+
+    const chat = chatHistory.find(c => c.id === id);
+
+    if (!chat) {
+        return;
+    }
+    currentChat = chat;
+   const history =
+    document.getElementById("chat-history");
+
+if (!history) {
+    return;
+}
+
+history.innerHTML = "";
+
+chat.messages.forEach(message => {
+
+    if (message.role === "user") {
+
+        history.innerHTML += createUserMessage(
+            message.content
+        );
+
+    } else {
+
+        history.innerHTML += createAIMessage(
+            message.content
+        );
+
+    }
+
+});
 }
 
 
@@ -1293,42 +1427,22 @@ if (globalSendBtn) {
     const history =
         document.getElementById("chat-history");
 
-   history.innerHTML += \`
-<div style="
-    display:flex;
-justify-content:flex-end;
-margin:4px 0;
-    
-">
-
-    <div style="
-        display:inline-block;
-max-width:65%;
-width:auto;
-padding:4px 14px;
-border-radius:18px 18px 6px 18px;
-background:linear-gradient(135deg,#0E639C,#1177BB);
-box-shadow:0 4px 12px rgba(0,0,0,.25);
-color:white;
-white-space:pre-wrap;
-word-break:break-word;
-line-height:1.2;
-font-size:15px;
-    ">
-
-        \${input.value}
-
-    </div>
-
-</div>
-\`;
-     currentChat.push({
+history.innerHTML += createUserMessage(
+    input.value.trim()
+);
+     currentChat.messages.push({
 
     role: "user",
 
     content: input.value.trim()
 
 });
+
+if (!currentChat.title) {
+
+    currentChat.title = input.value.trim();
+
+}
     vscode.postMessage({
 
     command: "globalChat",
@@ -1720,44 +1834,10 @@ if (message.command === "globalChatResponse") {
 }
 
 
-    loading.outerHTML = \`
-<div
-    style="
-        display:flex;
-        justify-content:flex-start;
-        margin:20px 0;
-    ">
-
-    <div style="
-        max-width:80%;
-        background:#2D2D30;
-        border:1px solid #3E3E42;
-        border-left:4px solid #4FC3F7;
-        padding:16px;
-        border-radius:18px 18px 18px 6px;
-    ">
-
-        <div style="
-            color:#4FC3F7;
-            font-size:12px;
-            font-weight:bold;
-            margin-bottom:10px;
-        ">
-            🤖 DEBUGVISION AI
-        </div>
-
-        <div style="
-            white-space:pre-wrap;
-            line-height:1.75;
-        ">
-            \${message.response}
-        </div>
-
-    </div>
-
-</div>
-\`;
-    currentChat.push({
+    loading.outerHTML = createAIMessage(
+    message.response
+);
+    currentChat.messages.push({
 
     role: "assistant",
 
