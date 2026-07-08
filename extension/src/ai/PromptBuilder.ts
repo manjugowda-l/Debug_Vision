@@ -101,58 +101,33 @@ Complete Source Code:
 ${code}
 
 Instructions:
+Return ONLY valid JSON.
 
-Use the following structure exactly.
+Do NOT use markdown.
 
-<h3>📘 Explanation</h3>
+Do NOT use HTML.
 
-Explain what the compiler is complaining about in simple English.
+Do NOT use code fences.
 
-<h3>❓ Why it happened</h3>
+Use exactly this schema:
 
-Explain why THIS code produced this error.
-Refer to the actual source code above.
-
-<h3>🛠 How to fix it</h3>
-
-Explain the correct approach.
-
-<h3>💡 Correct Example</h3>
-
-Provide only the corrected code snippet.
-
-Return it exactly in this format:
-
-<div class="code-header">
-    <span>Correct Example</span>
-</div>
-
-<div class="example-code">
-<pre><code>
-...
-</code></pre>
-</div>
-
-
-
-<h3>⭐ Best Practice</h3>
-
-Give one professional programming tip.
+{
+  "explanation": "",
+  "why": "",
+  "fix": "",
+  "example": "",
+  "bestPractice": ""
+}
 
 Rules:
 
-- Use simple English.
-- Never mention that you are an AI.
-- Never say "I don't have the source code."
-- Never use markdown code fences.
-- Never output HTML comments.
-- Never output placeholders.
-- Keep the explanation under 250 words.
+- explanation: Explain the compiler error in simple English.
+- why: Explain why THIS source code produced the error.
+- fix: Explain exactly how to fix it.
+- example: Return ONLY the corrected code snippet.
+- bestPractice: Give one professional programming tip.
 
-Never output placeholders.
-
-Never output HTML comments.
-`;
+Return JSON only.`;
   }
 
   /**

@@ -243,10 +243,7 @@ if (message.command === "confirmFix") {
         const explanation = (
           await AIService.getInstance().explainDiagnostic(diagnostic)
         )
-          .replace(/^```html\s*/i, "")
-          .replace(/^```\s*/i, "")
-          .replace(/```$/i, "")
-          .trim();
+          
 
         this.panel.webview.postMessage({
           command: "showExplanation",
@@ -1598,7 +1595,8 @@ window.addEventListener("message", (event) => {
            \`;
     }
 
-   if (message.command === "showExplanation") {
+   
+if (message.command === "showExplanation") {
 
     const div =
         document.getElementById("content-" + message.index);
@@ -1607,11 +1605,40 @@ window.addEventListener("message", (event) => {
         return;
     }
 
+    const data = message.explanation;
+
     div.style.display = "block";
+
     div.innerHTML = \`
-\${message.explanation}
+<h3>📘 Explanation</h3>
 
+<p>\${data.explanation}</p>
 
+<h3>❓ Why it happened</h3>
+
+<p>\${data.why}</p>
+
+<h3>🛠 How to fix it</h3>
+
+<p>\${data.fix}</p>
+
+<div class="code-header">
+    <span>Correct Example</span>
+
+    <button
+        class="copy-code-btn"
+        data-code="\${encodeURIComponent(data.example)}">
+        📋 Copy
+    </button>
+</div>
+
+<div class="example-code">
+<pre><code>\${data.example}</code></pre>
+</div>
+
+<h3>⭐ Best Practice</h3>
+
+<p>\${data.bestPractice}</p>
 
 <div style="
     display:flex;
@@ -1634,26 +1661,8 @@ window.addEventListener("message", (event) => {
 </div>
 \`;
 
-const example = div.querySelector(".example-code");
+    return;
 
-if (example) {
-
-    example.insertAdjacentHTML(
-        "beforebegin",
-        \`
-        <div class="code-header">
-            <span>Correct Example</span>
-
-            <button
-                class="copy-code-btn"
-                data-code="\${encodeURIComponent(example.textContent ?? "")}">
-                📋 Copy
-            </button>
-        </div>
-        \`
-    );
-
-}
 }
 
 

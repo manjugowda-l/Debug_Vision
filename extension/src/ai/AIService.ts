@@ -4,7 +4,13 @@ import { PromptBuilder } from "./PromptBuilder";
 import { LoggerService } from "../services/LoggerService";
 import { OllamaProvider } from "./providers/OllamaProvider";
 
-
+export interface ExplanationResponse {
+  explanation: string;
+  why: string;
+  fix: string;
+  example: string;
+  bestPractice: string;
+}
 
 export interface FixResponse {
   canFix: boolean;
@@ -71,7 +77,7 @@ export class AIService {
    */
   public async explainDiagnostic(
     diagnostic: vscode.Diagnostic
-  ): Promise<string> {
+): Promise<ExplanationResponse>{
 
     const prompt =
       this.promptBuilder.buildExplanationPrompt(diagnostic);
@@ -79,12 +85,28 @@ export class AIService {
     this.logger.info("🤖 DebugVision AI is analyzing your code...");
 
     const response =
-      await this.provider.generateResponse(prompt);
+  await this.provider.generateResponse(prompt);
 
-    this.logger.info("Explanation generated.");
+this.logger.info("Explanation generated.");
 
-    return response;
-  }
+try {
+
+    const clean = response
+        .replace(/^```json/i, "")
+        .replace(/^```/i, "")
+        .replace(/```$/i, "")
+        .trim();
+
+    return JSON.parse(clean) as ExplanationResponse;
+
+} catch {
+
+    throw new Error(
+        "AI returned invalid explanation JSON."
+    );
+
+}
+}
 
 public async chatAboutDiagnostic(
   diagnostic: vscode.Diagnostic,
@@ -98,6 +120,7 @@ public async chatAboutDiagnostic(
     );
 
   this.logger.info("Generating chat response...");
+  this.logger.info(prompt);
   this.logger.info(prompt);
   const response =
     await this.provider.generateResponse(prompt);
@@ -173,5 +196,21 @@ public async generateFix(
     };
 
   }
+}
+
+public stopGeneration(): void {
+
+  if (
+    this.provider instanceof OllamaProvider
+  ) {
+
+    this.provider.stopGeneration();
+
+    this.logger.info(
+      "Generation stopped."
+    );
+
+  }
+
 }
 }
