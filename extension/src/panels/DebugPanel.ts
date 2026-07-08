@@ -843,6 +843,7 @@ style="display:none;
         let currentChat = null;
 
 let chatHistory = [];
+let activeChatId = null;
 function createNewChat() {
 
     currentChat = {
@@ -854,6 +855,7 @@ function createNewChat() {
         messages: []
 
     };
+    activeChatId = currentChat.id;
 
 }
 
@@ -1003,18 +1005,20 @@ function renderChatHistory() {
         .slice()
         .reverse()
         .forEach(chat => {
-
+            const isActive = chat.id === activeChatId;
             sidebar.innerHTML += \`
                 <div
                     class="history-item"
                     data-id="\${chat.id}"
                     style="
-                        padding:10px;
-                        margin-top:8px;
-                        border-radius:8px;
-                        cursor:pointer;
-                        background:#2D2D30;
-                    ">
+    padding:10px;
+    margin-top:8px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:.2s;
+    background:\${isActive ? "#6C3CF0" : "#2D2D30"};
+    border:\${isActive ? "1px solid #A78BFA" : "1px solid transparent"};
+">
 
                     \${chat.title}
 
@@ -1180,6 +1184,9 @@ if (historyItem) {
         return;
     }
     currentChat = chat;
+    activeChatId = chat.id;
+
+renderChatHistory();
    const history =
     document.getElementById("chat-history");
 
