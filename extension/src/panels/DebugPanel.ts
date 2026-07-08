@@ -703,6 +703,19 @@ style="display:none;
         ➕ New Chat
     </button>
 
+    <hr style="margin:18px 0;border-color:#444;">
+
+<div
+    style="
+        color:#BBBBBB;
+        font-size:13px;
+        margin-bottom:10px;
+    ">
+    Today
+</div>
+
+<div id="chat-history-list"></div>
+
 </div>
     
 <hr style="margin:30px 0;border-color:#444;">
@@ -887,6 +900,47 @@ function getWelcomeScreen() {
 \`;
 }
 
+
+function renderChatHistory() {
+
+    const sidebar =
+        document.getElementById("chat-history-list");
+
+    if (!sidebar) {
+        return;
+    }
+
+    sidebar.innerHTML = "";
+
+    chatHistory
+        .slice()
+        .reverse()
+        .forEach(chat => {
+
+            sidebar.innerHTML += \`
+                <div
+                    class="history-item"
+                    data-id="\${chat.id}"
+                    style="
+                        padding:10px;
+                        margin-top:8px;
+                        border-radius:8px;
+                        cursor:pointer;
+                        background:#2D2D30;
+                    ">
+
+                    \${chat.title}
+
+                </div>
+            \`;
+
+        });
+
+}
+
+
+
+
 document.addEventListener("keydown", (event) => {
 
 
@@ -1015,6 +1069,7 @@ if (newChatBtn) {
             title: currentChat[0].content,
             messages: [...currentChat]
         });
+        renderChatHistory();
 
     }
 
