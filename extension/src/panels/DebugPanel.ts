@@ -1011,16 +1011,28 @@ function renderChatHistory() {
                     class="history-item"
                     data-id="\${chat.id}"
                     style="
-    padding:10px;
+    padding:14px;
     margin-top:8px;
-    border-radius:8px;
+    border-radius:12px;
     cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,.25);
     transition:.2s;
     background:\${isActive ? "#6C3CF0" : "#2D2D30"};
     border:\${isActive ? "1px solid #A78BFA" : "1px solid transparent"};
 ">
 
-                    \${chat.title}
+                    <div style="
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:600;
+    color:white;
+">
+    💬
+    <span>
+       \${chat.title}
+    </span>
+</div>
 
                 </div>
             \`;
