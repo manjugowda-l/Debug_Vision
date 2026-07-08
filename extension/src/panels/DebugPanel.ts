@@ -1213,6 +1213,7 @@ chat.messages.forEach(message => {
     }
 
 });
+history.scrollTop = history.scrollHeight;
 }
 
 
