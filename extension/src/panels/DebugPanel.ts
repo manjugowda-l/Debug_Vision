@@ -1149,22 +1149,7 @@ const newChatBtn = target.closest("#new-chat-btn");
 if (newChatBtn) {
 
     // Save current chat only if it has messages
-    
-if (currentChat.messages.length > 0) {
-
-    const exists = chatHistory.find(
-        chat => chat.id === currentChat.id
-    );
-
-    if (!exists) {
-
-        chatHistory.push(currentChat);
-
-    }
-
-    renderChatHistory();
-
-}
+ 
 
     createNewChat();
 
@@ -1441,6 +1426,18 @@ history.innerHTML += createUserMessage(
 if (!currentChat.title) {
 
     currentChat.title = input.value.trim();
+
+}
+
+const exists = chatHistory.find(
+    chat => chat.id === currentChat.id
+);
+
+if (!exists) {
+
+    chatHistory.push(currentChat);
+
+    renderChatHistory();
 
 }
     vscode.postMessage({
