@@ -827,7 +827,65 @@ style="display:none;
         const scripts = `
         <script>
         const vscode = acquireVsCodeApi();
-        
+        let currentChat = [];
+
+let chatHistory = [];
+function getWelcomeScreen() {
+
+    return \`
+<div id="chat-empty-state"
+    style="
+        text-align:center;
+        margin-top:50px;
+        color:#BBBBBB;
+    ">
+
+    <div style="
+        font-size:42px;
+        margin-bottom:12px;
+    ">
+        💬
+    </div>
+
+    <h3 style="
+        color:#4FC3F7;
+        margin-bottom:10px;
+    ">
+        Welcome to DebugVision AI
+    </h3>
+
+    <p style="line-height:1.8;">
+
+        Ask me anything about:
+
+        <br><br>
+
+        📄 Your current file
+
+        <br>
+
+        ❌ Compiler errors
+
+        <br>
+
+        🧠 Programming concepts
+
+        <br>
+
+        🛠 AI fix suggestions
+
+    </p>
+
+    <p style="
+        margin-top:25px;
+        opacity:.7;
+    ">
+        Start by typing a question below.
+    </p>
+
+</div>
+\`;
+}
 
 document.addEventListener("keydown", (event) => {
 
@@ -942,6 +1000,40 @@ if (closeSidebarBtn) {
 
     return;
 }
+
+
+
+const newChatBtn = target.closest("#new-chat-btn");
+
+if (newChatBtn) {
+
+    // Save current chat only if it has messages
+    if (currentChat.length > 0) {
+
+        chatHistory.push({
+            id: Date.now(),
+            title: currentChat[0].content,
+            messages: [...currentChat]
+        });
+
+    }
+
+    currentChat = [];
+
+    const history =
+        document.getElementById("chat-history");
+
+    if (!history) {
+        return;
+    }
+
+    history.innerHTML = getWelcomeScreen();
+
+document.getElementById("global-question")?.focus();
+
+    return;
+}
+
 
 const backBtn = target.closest("#back-btn");
 
@@ -1175,7 +1267,13 @@ font-size:15px;
 
 </div>
 \`;
+     currentChat.push({
 
+    role: "user",
+
+    content: input.value.trim()
+
+});
     vscode.postMessage({
 
     command: "globalChat",
@@ -1183,7 +1281,7 @@ font-size:15px;
     question: input.value.trim()
 
 });
-
+   
     input.value = "";
 
     return;
@@ -1604,7 +1702,13 @@ if (message.command === "globalChatResponse") {
 
 </div>
 \`;
+    currentChat.push({
 
+    role: "assistant",
+
+    content: message.response
+
+});
     history.scrollTop = history.scrollHeight;
 }
 
