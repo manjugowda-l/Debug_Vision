@@ -510,6 +510,20 @@ if (message.command === "confirmFix") {
 
 }
 
+.chat-history-card{
+    transition:all .2s ease;
+}
+
+.chat-history-card:hover{
+
+    transform:translateY(-2px);
+
+    filter:brightness(1.08);
+
+    box-shadow:0 6px 16px rgba(0,0,0,.35);
+
+}
+
     </style>
     `;
 //      const headerHtml = `
@@ -1008,7 +1022,7 @@ function renderChatHistory() {
             const isActive = chat.id === activeChatId;
             sidebar.innerHTML += \`
                 <div
-                    class="history-item"
+                    class="history-item chat-history-card"
                     data-id="\${chat.id}"
                     style="
     padding:14px;
