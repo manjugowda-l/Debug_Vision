@@ -1,18 +1,28 @@
 # 🐞 DebugVision
 
-> **An AI-powered debugging assistant for Visual Studio Code that explains compiler errors, generates intelligent fixes, and helps developers understand their code—directly inside the editor.**
+> **An AI-powered debugging assistant for Visual Studio Code that explains compiler errors, generates intelligent fixes, and helps developers debug with confidence.**
 
 ![VS Code Extension](https://img.shields.io/badge/VS_Code-Extension-007ACC?logo=visualstudiocode&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
 ![Ollama](https://img.shields.io/badge/Ollama-LLM-orange)
-![License](https://img.shields.io/badge/License-MIT-green)
+![MIT License](https://img.shields.io/badge/License-MIT-green)
+
+---
+
+> 📸 **Main DebugVision Panel**
+
+<!-- Replace with your actual screenshot -->
+
+<p align="center">
+  <img src="images/main-panel.png" alt="DebugVision Main Panel" width="900">
+</p>
 
 ---
 
 ## 📖 Overview
 
-DebugVision is an AI-powered Visual Studio Code extension designed to make debugging faster, easier, and more educational. Instead of only displaying compiler errors, it explains **why** an error occurred, suggests AI-generated fixes, and enables developers to interact with an AI assistant without leaving the editor.
+DebugVision is an AI-powered Visual Studio Code extension designed to make debugging faster, easier, and more educational. Instead of only displaying compiler errors, it explains **why** an error occurred, suggests AI-generated fixes, and enables developers to interact with an AI assistant—all without leaving the editor.
 
 Whether you're a beginner learning programming concepts or an experienced developer looking to speed up debugging, DebugVision helps you understand errors, apply fixes confidently, and stay focused on writing better code.
 
