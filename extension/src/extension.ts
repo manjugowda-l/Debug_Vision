@@ -14,7 +14,7 @@ import { StartDebugSessionCommand } from "./commands/StartDebugSession";
 
 
 const extensionName = "DebugVision";
-const extensionVersion = "0.1.0";
+const extensionVersion = "1.0.0";
 
 /**
  * Activates the DebugVision extension.
