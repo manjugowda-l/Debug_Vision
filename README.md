@@ -4,13 +4,10 @@
 
 ![VS Code Extension](https://img.shields.io/badge/VS_Code-Extension-007ACC?logo=visualstudiocode&logoColor=white)    
 
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
-
-![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white)
-
-![Ollama](https://img.shields.io/badge/Ollama-LLM-orange)
-
-![License](https://img.shields.io/badge/License-MIT-green)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)       
+   ![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white)               
+   ![Ollama](https://img.shields.io/badge/Ollama-LLM-orange)
+   ![License](https://img.shields.io/badge/License-MIT-green)
 
 ---
 
