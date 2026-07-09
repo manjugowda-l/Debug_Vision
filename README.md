@@ -1,19 +1,20 @@
 # 🐞 DebugVision
 
-> AI-powered debugging assistant for Visual Studio Code that explains compiler errors, generates intelligent fixes, and helps developers understand their code through interactive AI conversations.
+> **An AI-powered debugging assistant for Visual Studio Code that explains compiler errors, generates intelligent fixes, and helps developers understand their code—directly inside the editor.**
 
-![VS Code](https://img.shields.io/badge/VS_Code-Extension-007ACC?logo=visualstudiocode)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript)
-![Node.js](https://img.shields.io/badge/Node.js-Runtime-green?logo=node.js)
-![Ollama](https://img.shields.io/badge/AI-Ollama-orange)
+![VS Code Extension](https://img.shields.io/badge/VS_Code-Extension-007ACC?logo=visualstudiocode&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white)
+![Ollama](https://img.shields.io/badge/Ollama-LLM-orange)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 ---
 
 ## 📖 Overview
 
-DebugVision is an AI-powered debugging assistant built as a Visual Studio Code extension. It analyzes compiler diagnostics, explains errors in beginner-friendly language, suggests AI-generated fixes, and allows developers to chat with AI about their code—all without leaving VS Code.
+DebugVision is an AI-powered Visual Studio Code extension designed to make debugging faster, easier, and more educational. Instead of only displaying compiler errors, it explains **why** an error occurred, suggests AI-generated fixes, and enables developers to interact with an AI assistant without leaving the editor.
 
-The extension is designed to reduce debugging time while helping developers understand *why* an error occurred instead of simply showing the solution.
+Whether you're a beginner learning programming concepts or an experienced developer looking to speed up debugging, DebugVision helps you understand errors, apply fixes confidently, and stay focused on writing better code.
 
 ---
 
@@ -125,21 +126,25 @@ images/chat.png
 
 ```
 VS Code
-      │
-      ▼
+     │
+     ▼
 DebugVision Extension
-      │
-      ▼
+     │
+     ▼
+Diagnostics Engine
+     │
+     ▼
 AI Service
-      │
-      ▼
+     │
+     ▼
 Ollama
-      │
-      ▼
-LLM Response
-      │
-      ▼
+     │
+     ▼
+AI Response
+     │
+     ▼
 Debug Panel
+
 ```
 
 ---
@@ -156,25 +161,39 @@ Debug Panel
 
 ---
 
-## 📂 Project Structure
+## 🏗️ Architecture & Project Structure
 
 ```
 extension/
 │
-├── ai/
-│   ├── providers/
-│   ├── PromptBuilder.ts
-│   └── AIService.ts
+├── src/
+│   ├── ai/
+│   │   ├── providers/
+│   │   ├── AIService.ts
+│   │   ├── PromptBuilder.ts
+│   │   └── DebugSessionManager.ts
+│   │
+│   ├── commands/
+│   │   ├── StartDebugSession.ts
+│   │   └── HelloWorld.ts
+│   │
+│   ├── panels/
+│   │   └── DebugPanel.ts
+│   │
+│   ├── services/
+│   │   ├── DiagnosticsService.ts
+│   │   ├── DiagnosticsCacheService.ts
+│   │   ├── WorkspaceService.ts
+│   │   ├── LoggerService.ts
+│   │   └── AIFixHistoryService.ts
+│   │
+│   ├── types/
+│   ├── utils/
+│   ├── views/
+│   └── extension.ts
 │
-├── commands/
-│
-├── panels/
-│
-├── services/
-│
-├── utils/
-│
-└── extension.ts
+├── package.json
+└── tsconfig.json
 ```
 
 ---
@@ -184,7 +203,7 @@ extension/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/debugvision.git
+git clone https://github.com/manjugowda-l/Debug_Vision.git
 ```
 
 ### 2. Install dependencies
