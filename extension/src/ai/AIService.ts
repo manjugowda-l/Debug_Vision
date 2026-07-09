@@ -198,19 +198,19 @@ public async generateFix(
   }
 }
 
-public stopGeneration(): void {
+//public stopGeneration(): void {
 
-  if (
-    this.provider instanceof OllamaProvider
-  ) {
+//  if (
+//    this.provider instanceof OllamaProvider
+//  ) {
 
-    this.provider.stopGeneration();
+//    this.provider.stopGeneration();
 
-    this.logger.info(
-      "Generation stopped."
-    );
+//    this.logger.info(
+//      "Generation stopped."
+//    );
 
-  }
+//  }
 
-}
+//}
 }

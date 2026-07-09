@@ -72,6 +72,7 @@ export async function activate(
 /**
  * Deactivates the extension when VS Code is shutting down.
  */
+
 export function deactivate(): void {
   const logger = LoggerSafe();
 

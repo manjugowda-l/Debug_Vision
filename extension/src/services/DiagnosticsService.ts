@@ -9,7 +9,7 @@ export class DiagnosticsService {
   private readonly cache = DiagnosticsCacheService.getInstance();
 
   // Stores the document being debugged
-  private currentDocumentUri?: vscode.Uri;
+ 
 
   private constructor() {}
 
@@ -24,20 +24,25 @@ export class DiagnosticsService {
   /**
    * Sets the document currently being debugged.
    */
-  public setCurrentDocument(uri: vscode.Uri): void {
-    this.currentDocumentUri = uri;
-  }
+ 
 
   /**
    * Returns diagnostics for the current debug document.
    */
   public getDiagnostics(): vscode.Diagnostic[] {
-    if (!this.currentDocumentUri) {
-      return [];
+
+    const editor =
+        vscode.window.activeTextEditor;
+
+    if (!editor) {
+        return [];
     }
 
-    return vscode.languages.getDiagnostics(this.currentDocumentUri);
-  }
+    return vscode.languages.getDiagnostics(
+        editor.document.uri
+    );
+
+}
 
   /**
    * Returns only errors.

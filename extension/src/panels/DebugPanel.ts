@@ -2,13 +2,18 @@ import * as vscode from "vscode";
 import { DiagnosticsService } from "../services/DiagnosticsService";
 import { AIService } from "../ai";
 import { WorkspaceService } from "../services/WorkspaceService";
+import { DebugSessionManager } from "../ai/DebugSessionManager";
+
 
 export class DebugPanel {
   private static currentPanel: DebugPanel | undefined;
 
   private readonly panel: vscode.WebviewPanel;
   private readonly diagnosticsService = DiagnosticsService.getInstance();
+  private readonly explanationCache = new Map<string, any>();
+  private readonly fixCache = new Map<string, import("../ai/AIService").FixResponse>();
   private diagnosticsListener?: vscode.Disposable;
+  private editorListener?: vscode.Disposable;
 
   private constructor() {
     this.panel = vscode.window.createWebviewPanel(
@@ -27,10 +32,23 @@ export class DebugPanel {
       this.refresh();
     });
 
-    this.panel.onDidDispose(() => {
-      this.diagnosticsListener?.dispose();
-      DebugPanel.currentPanel = undefined;
+    this.editorListener =
+    vscode.window.onDidChangeActiveTextEditor(() => {
+        this.refresh();
     });
+
+    this.panel.onDidDispose(() => {
+
+    this.diagnosticsListener?.dispose();
+    this.editorListener?.dispose();
+
+    DebugSessionManager
+        .getInstance()
+        .endSession();
+
+    DebugPanel.currentPanel = undefined;
+
+});
   }
 
   public static createOrShow(): DebugPanel {
@@ -54,7 +72,30 @@ export class DebugPanel {
 
       const diagnostics = this.diagnosticsService.getDiagnostics();
       const diagnostic = diagnostics[message.index];
+      const cacheKey =
+    `${diagnostic.message}-${diagnostic.range.start.line}-${diagnostic.range.start.character}`;
 
+const cachedFix =
+    this.fixCache.get(cacheKey);
+
+if (cachedFix) {
+
+    const currentCode =
+        WorkspaceService
+            .getInstance()
+            .getActiveFileContent() ?? "";
+
+    this.panel.webview.postMessage({
+        command: "showFixPreview",
+        index: message.index,
+        currentCode,
+        fixedCode: cachedFix.fixedCode,
+        confidence: cachedFix.confidence
+    });
+
+    return;
+
+}
       if (!diagnostic) {
         return;
       }
@@ -67,7 +108,10 @@ export class DebugPanel {
       try {
 
         const fixResponse = await AIService.getInstance().generateFix(diagnostic) as import("../ai/AIService").FixResponse;if (!fixResponse.canFix) {
-
+            this.fixCache.set(
+    cacheKey,
+    fixResponse
+);
             this.panel.webview.postMessage({
               command: "showCannotFix",
               index: message.index,
@@ -130,18 +174,29 @@ if (message.command === "globalChat") {
             response
         });
 
-    } catch (error) {
+    } catch (error: any) {
 
-        vscode.window.showErrorMessage(
-            error instanceof Error
-                ? error.message
-                : "Failed to generate AI response."
-        );
-
+    if (
+        error.name === "CanceledError" ||
+        error.name === "AbortError" ||
+        error.code === "ERR_CANCELED"
+    ) {
+        return;
     }
+
+    vscode.window.showErrorMessage(
+        error instanceof Error
+            ? error.message
+            : "Failed to generate AI response."
+    );
+
+}
 
     return;
 }
+
+
+
 // ==========================
 // Chat
 // ==========================
@@ -224,48 +279,71 @@ if (message.command === "confirmFix") {
     // ==========================
     // Explain
     // ==========================
-    if (message.command === "explain") {
+    // ==========================
+// Explain
+// ==========================
+if (message.command === "explain") {
 
-      const diagnostics = this.diagnosticsService.getDiagnostics();
-      const diagnostic = diagnostics[message.index];
+    const diagnostics = this.diagnosticsService.getDiagnostics();
+    const diagnostic = diagnostics[message.index];
 
-      if (!diagnostic) {
+    if (!diagnostic) {
         return;
-      }
-
-      this.panel.webview.postMessage({
-        command: "loading",
-        index: message.index
-      });
-
-      try {
-
-        const explanation = (
-          await AIService.getInstance().explainDiagnostic(diagnostic)
-        )
-          
-
-        this.panel.webview.postMessage({
-          command: "showExplanation",
-          index: message.index,
-          explanation
-        });
-
-      } catch (error) {
-
-        vscode.window.showErrorMessage(
-          error instanceof Error
-            ? error.message
-            : "Failed to generate explanation."
-        );
-
-      }
-
-      return;
     }
 
+    const cacheKey =
+        `${diagnostic.message}-${diagnostic.range.start.line}-${diagnostic.range.start.character}`;
 
+    const cached =
+        this.explanationCache.get(cacheKey);
 
+    if (cached) {
+
+        this.panel.webview.postMessage({
+            command: "showExplanation",
+            index: message.index,
+            explanation: cached
+        });
+
+        return;
+
+    }
+
+    this.panel.webview.postMessage({
+        command: "loading",
+        index: message.index
+    });
+
+    try {
+
+        const explanation =
+            await AIService
+                .getInstance()
+                .explainDiagnostic(diagnostic);
+
+        this.explanationCache.set(
+            cacheKey,
+            explanation
+        );
+
+        this.panel.webview.postMessage({
+            command: "showExplanation",
+            index: message.index,
+            explanation
+        });
+
+    } catch (error) {
+
+        vscode.window.showErrorMessage(
+            error instanceof Error
+                ? error.message
+                : "Failed to generate explanation."
+        );
+
+    }
+
+    return;
+}
 
   });
 }
@@ -273,6 +351,9 @@ if (message.command === "confirmFix") {
    * Refreshes the panel whenever diagnostics change.
    */
   public refresh(): void {
+
+    this.explanationCache.clear();
+this.fixCache.clear();
     const diagnostics = this.diagnosticsService.getDiagnostics();
 
     console.log("REFRESH:", diagnostics.length);
@@ -804,44 +885,53 @@ style="display:none;
     </div>
 
 </div>
-
-    <div style="
-        background:#252526;
+<div style="
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:#252526;
     border:1px solid #3C3C3C;
-    border-radius:12px;
-    padding:12px;
-    ">
+    border-radius:10px;
+    padding:6px 10px;
+">
 
-        <textarea
-    id="global-question"
-    rows="2"
-    style="
-        width:100%;
-        resize:none;
-        padding:14px 16px;
-        border:none;
-        border-radius:12px;
-        box-sizing:border-box;
-        background:#252526;
-        color:white;
-        font-size:14px;
-        font-family:Segoe UI;
-        outline:none;
-        line-height:1.5;
-    "
-    placeholder="Ask anything about your code..."></textarea>
-        <div style="
+    <input
+        id="global-question"
+        type="text"
+        placeholder="Ask anything about your code..."
+        style="
+            flex:1;
+            height:28px;
+            border:none;
+            outline:none;
+            background:transparent;
+            color:white;
+            font-size:14px;
+            font-family:Segoe UI;
+        "
+    />
+
+    <button
+        id="global-send-btn"
+        title="Send"
+        style="
+            width:32px;
+            height:32px;
             display:flex;
-            justify-content:flex-end;
-            margin-top:12px;
+            align-items:center;
+            justify-content:center;
+            background:none;
+            border:none;
+            color:#4FC3F7;
+            cursor:pointer;
+            font-size:20px;
+            padding:0;
         ">
+        ➤
+    </button>
 
-            <button id="global-send-btn">
-    ➤ Send
-</button>
-        </div>
-
-    </div>
+</div>
+    
 
 </div>
 </div>
@@ -855,7 +945,7 @@ style="display:none;
 let chatHistory = [];
 let activeChatId = null;
 let isGenerating = false;
-let stopRequested = false;
+
 function createNewChat() {
 
     currentChat = {
@@ -1078,25 +1168,26 @@ document.addEventListener("keydown", (event) => {
 }
 
 
-    const input =
-        document.getElementById("global-question");
+    const globalInput =
+    document.getElementById("global-question");
 
-    if (!(input instanceof HTMLTextAreaElement)) {
-        return;
-    }
+if (globalInput) {
 
-    if (document.activeElement !== input) {
-        return;
-    }
+    globalInput.addEventListener("keydown", function (event) {
 
-    if (event.key === "Enter" && !event.shiftKey) {
+        if (event.key === "Enter") {
 
-        event.preventDefault();
+            event.preventDefault();
 
-        document
-            .getElementById("global-send-btn")
-            ?.click();
-    }
+            document
+                .getElementById("global-send-btn")
+                ?.click();
+
+        }
+
+    });
+
+}
 
 });
 
@@ -1435,12 +1526,6 @@ const globalSendBtn = target.closest("#global-send-btn");
 if (globalSendBtn) {
 if (isGenerating) {
 
-    stopRequested = true;
-
-    isGenerating = false;
-
-    globalSendBtn.textContent = "➤ Send";
-
     return;
 }
 
@@ -1484,7 +1569,8 @@ if (!exists) {
 }
     isGenerating = true;
 
-globalSendBtn.textContent = "■ Stop";
+globalSendBtn.disabled = true;
+globalSendBtn.style.opacity = "0.5";
     vscode.postMessage({
 
     command: "globalChat",
@@ -1871,17 +1957,7 @@ if (message.command === "globalChatLoading") {
 }
 
 if (message.command === "globalChatResponse") {
-    if (stopRequested) {
-
-    stopRequested = false;
-
-    const loading =
-        document.getElementById("ai-loading");
-
-    loading?.remove();
-
-    return;
-}
+    
     const history =
         document.getElementById("chat-history");
 
@@ -1910,15 +1986,16 @@ if (message.command === "globalChatResponse") {
 });
     history.scrollTop = history.scrollHeight;
 isGenerating = false;
-
-const sendBtn =
+const globalSendBtn =
     document.getElementById("global-send-btn");
 
-if (sendBtn instanceof HTMLButtonElement) {
+if (globalSendBtn instanceof HTMLButtonElement) {
 
-    sendBtn.textContent = "➤ Send";
+    globalSendBtn.disabled = false;
+    globalSendBtn.style.opacity = "1";
 
 }
+
 }
 
 });

@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import { AIService } from "../ai";
 import { DebugSessionManager } from "../ai/DebugSessionManager";
 import { DebugPanel } from "../panels/DebugPanel";
-import { DiagnosticsService } from "../services/DiagnosticsService";
+//import { DiagnosticsService } from "../services/DiagnosticsService";
 import { WorkspaceService } from "../services/WorkspaceService";
 
 export class StartDebugSessionCommand {
@@ -31,13 +31,13 @@ export class StartDebugSessionCommand {
         }
 
         // Tell DiagnosticsService which file is being debugged
-        DiagnosticsService.getInstance().setCurrentDocument(
-          editor.document.uri
-        );
+        //DiagnosticsService.getInstance().setCurrentDocument(
+        //  editor.document.uri
+        //);
 
-        WorkspaceService.getInstance().setActiveDocument(
-          editor.document
-        );
+        //WorkspaceService.getInstance().setActiveDocument(
+        //  editor.document
+        //);
 
         WorkspaceService.getInstance().setActiveEditor(
             editor

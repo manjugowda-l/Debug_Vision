@@ -25,11 +25,21 @@ export class OllamaProvider implements AIProvider {
 );
 
       return response.data.response;
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
 
-      return "Unable to connect to Ollama. Make sure Ollama is running.";
+    if (
+        error.name === "CanceledError" ||
+        error.name === "AbortError" ||
+        error.code === "ERR_CANCELED"
+    ) {
+        throw error;
     }
+
+    console.error(error);
+
+    return "Unable to connect to Ollama. Make sure Ollama is running.";
+
+}
   }
 
   public getProviderName(): string {
@@ -45,9 +55,5 @@ export class OllamaProvider implements AIProvider {
     }
   }
 
-  public stopGeneration(): void {
-
-    this.controller?.abort();
-
-}
+ 
 }

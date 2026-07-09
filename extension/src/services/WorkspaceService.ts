@@ -6,17 +6,11 @@ export class WorkspaceService {
 
   private readonly logger = LoggerService.getInstance();
 
-  private activeDocument?: vscode.TextDocument;
-
   private activeEditor?: vscode.TextEditor;
 
   private constructor() {}
 
-  public setActiveDocument(
-  document: vscode.TextDocument
-): void {
-  this.activeDocument = document;
-}
+  
 
   public static getInstance(): WorkspaceService {
     if (!WorkspaceService.instance) {
@@ -55,8 +49,8 @@ export class WorkspaceService {
    * Returns the currently active document.
    */
   public getActiveDocument(): vscode.TextDocument | undefined {
-    return this.activeDocument;
-  }
+    return vscode.window.activeTextEditor?.document;
+}
 
   /**
    * Returns the full path of the active file.
@@ -69,9 +63,8 @@ export class WorkspaceService {
    * Returns the contents of the active file.
    */
   public getActiveFileContent(): string | undefined {
-    return this.getActiveDocument()?.getText();
-  }
-
+    return vscode.window.activeTextEditor?.document.getText();
+}
   /**
    * Logs workspace information.
    */
@@ -94,12 +87,14 @@ export class WorkspaceService {
   }
 
   public getActiveFileName(): string | undefined {
-    return this.getActiveDocument()?.fileName.split("\\").pop();
-  }
+    return vscode.window.activeTextEditor?.document.fileName
+        .split("\\")
+        .pop();
+}
 
   public getLanguageId(): string | undefined {
-    return this.getActiveDocument()?.languageId;
-  }
+    return vscode.window.activeTextEditor?.document.languageId;
+}
 
   public getLineCount(): number {
     return this.getActiveDocument()?.lineCount ?? 0;
