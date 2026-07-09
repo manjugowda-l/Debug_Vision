@@ -5,7 +5,7 @@
 ![VS Code Extension](https://img.shields.io/badge/VS_Code-Extension-007ACC?logo=visualstudiocode&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
-![Ollama](https://img.shields.io/badge/Ollama-LLM-orange)
+![Ollama](https://img.shields.io/badge/Ollama-Qwen2.5--7B-orange)
 ![MIT License](https://img.shields.io/badge/License-MIT-green)
 
 ---
