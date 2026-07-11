@@ -9,15 +9,6 @@
 ![MIT License](https://img.shields.io/badge/License-MIT-green)
 
 ---
-
-> 📸 **Main DebugVision Panel**
-
-<!-- Replace with your actual screenshot -->
-
-<p align="center">
-  <img src="images/main-panel.png" alt="DebugVision Main Panel" width="900">
-</p>
-
 ---
 
 ## 📖 Overview
@@ -90,72 +81,51 @@ without leaving VS Code.
 
 ---
 
+
+## 🏗️ Architecture
+
+The following diagram illustrates how DebugVision processes compiler diagnostics, interacts with a local AI model through Ollama, and delivers explanations, fixes, and chat responses directly inside Visual Studio Code.
+
+![DebugVision Architecture](assets/architecture.png)
+
+
+```
+
+```
 ## 📸 Screenshots
 
-### Main Debug Panel
+### 🐞 Main Debug Panel
 
-> *(Add screenshot here)*
+Displays all detected compiler diagnostics with quick access to AI-powered explanations and fixes.
 
-```
-images/main-panel.png
-```
+![Main Debug Panel](assets/main-panel.png)
 
 ---
 
-### AI Error Explanation
+### 🤖 AI Error Explanation
 
-> *(Add screenshot here)*
+Understand compiler errors with beginner-friendly explanations, examples, and best practices.
 
-```
-images/explanation.png
-```
+![AI Error Explanation](assets/explain.png)
 
 ---
 
-### AI Fix Preview
+### 🛠 AI Fix Preview
 
-> *(Add screenshot here)*
+Preview AI-generated fixes, compare them with your current code, review the confidence score, and apply changes with one click.
 
-```
-images/fix-preview.png
-```
+![AI Fix Preview](assets/ai-fix.png)
 
 ---
 
-### AI Chat
+### 💬 AI Chat
 
-> *(Add screenshot here)*
+Ask programming questions, understand compiler errors, or discuss your code directly inside VS Code.
 
-```
-images/chat.png
-```
+![AI Chat](assets/chat-panel.png)
 
 ---
 
-## 🏗 Architecture
-
-```
-VS Code
-     │
-     ▼
-DebugVision Extension
-     │
-     ▼
-Diagnostics Engine
-     │
-     ▼
-AI Service
-     │
-     ▼
-Ollama
-     │
-     ▼
-AI Response
-     │
-     ▼
-Debug Panel
-
-```
 
 ---
 
@@ -214,6 +184,7 @@ extension/
 
 ```bash
 git clone https://github.com/manjugowda-l/Debug_Vision.git
+
 ```
 
 ### 2. Install dependencies
@@ -237,7 +208,8 @@ ollama serve
 Pull the model if required:
 
 ```bash
-ollama pull llama3
+# Pull your preferred model (example)
+ollama pull qwen2.5:7b
 ```
 
 ### 5. Run the extension
@@ -296,7 +268,7 @@ Feel free to fork the repository and submit a pull request.
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License.See the LICENSE file for details.
 
 ---
 
