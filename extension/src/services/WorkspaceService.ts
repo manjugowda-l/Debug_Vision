@@ -42,14 +42,16 @@ export class WorkspaceService {
    * Returns the currently active editor.
    */
   public getActiveEditor(): vscode.TextEditor | undefined {
-    return vscode.window.activeTextEditor;
+    return this.activeEditor;
   }
 
   /**
    * Returns the currently active document.
    */
   public getActiveDocument(): vscode.TextDocument | undefined {
-    return vscode.window.activeTextEditor?.document;
+
+    return this.activeEditor?.document;
+
 }
 
   /**
@@ -63,7 +65,9 @@ export class WorkspaceService {
    * Returns the contents of the active file.
    */
   public getActiveFileContent(): string | undefined {
-    return vscode.window.activeTextEditor?.document.getText();
+
+    return this.activeEditor?.document.getText();
+
 }
   /**
    * Logs workspace information.

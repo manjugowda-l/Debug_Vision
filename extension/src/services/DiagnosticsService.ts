@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { LoggerService } from "./LoggerService";
 import { DiagnosticsCacheService } from "./DiagnosticsCacheService";
-
+import { WorkspaceService } from "./WorkspaceService";
 export class DiagnosticsService {
   private static instance: DiagnosticsService;
 
@@ -32,7 +32,9 @@ export class DiagnosticsService {
   public getDiagnostics(): vscode.Diagnostic[] {
 
     const editor =
-        vscode.window.activeTextEditor;
+        WorkspaceService
+            .getInstance()
+            .getStoredEditor();
 
     if (!editor) {
         return [];
@@ -41,7 +43,6 @@ export class DiagnosticsService {
     return vscode.languages.getDiagnostics(
         editor.document.uri
     );
-
 }
 
   /**

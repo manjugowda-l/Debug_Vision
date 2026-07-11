@@ -28,13 +28,31 @@ export class DebugPanel {
     this.refresh();
     this.registerMessageHandler();
     // Listen for diagnostics changes
-    this.diagnosticsListener = vscode.languages.onDidChangeDiagnostics(() => {
-      this.refresh();
+   this.diagnosticsListener =
+    vscode.languages.onDidChangeDiagnostics(() => {
+
+        setTimeout(() => {
+            this.refresh();
+        }, 200);
+
     });
 
-    this.editorListener =
-    vscode.window.onDidChangeActiveTextEditor(() => {
-        this.refresh();
+this.editorListener =
+    vscode.window.onDidChangeActiveTextEditor(editor => {
+
+        if (!editor) {
+            return;
+        }
+
+        WorkspaceService
+            .getInstance()
+            .setActiveEditor(editor);
+
+        // Refresh AFTER VS Code updates diagnostics
+        setTimeout(() => {
+            this.refresh();
+        }, 200);
+
     });
 
     this.panel.onDidDispose(() => {
@@ -63,7 +81,10 @@ export class DebugPanel {
 
 
   private registerMessageHandler(): void {
+    
+
   this.panel.webview.onDidReceiveMessage(async (message) => {
+    console.log("MESSAGE RECEIVED:", message.command);
 
     // ==========================
     // Apply Fix
@@ -72,6 +93,10 @@ export class DebugPanel {
 
       const diagnostics = this.diagnosticsService.getDiagnostics();
       const diagnostic = diagnostics[message.index];
+      if (!diagnostic) {
+    return;
+}
+      
       const cacheKey =
     `${diagnostic.message}-${diagnostic.range.start.line}-${diagnostic.range.start.character}`;
 
@@ -84,7 +109,7 @@ if (cachedFix) {
         WorkspaceService
             .getInstance()
             .getActiveFileContent() ?? "";
-
+    console.log("Sending fix preview");
     this.panel.webview.postMessage({
         command: "showFixPreview",
         index: message.index,
@@ -96,9 +121,7 @@ if (cachedFix) {
     return;
 
 }
-      if (!diagnostic) {
-        return;
-      }
+     
 
       this.panel.webview.postMessage({
         command: "loadingFix",
@@ -108,6 +131,7 @@ if (cachedFix) {
       try {
 
         const fixResponse = await AIService.getInstance().generateFix(diagnostic) as import("../ai/AIService").FixResponse;if (!fixResponse.canFix) {
+            console.log("AI returned fix");
             this.fixCache.set(
     cacheKey,
     fixResponse
@@ -282,10 +306,25 @@ if (message.command === "confirmFix") {
     // ==========================
 // Explain
 // ==========================
+// ==========================
+// Explain
+// ==========================
 if (message.command === "explain") {
 
-    const diagnostics = this.diagnosticsService.getDiagnostics();
-    const diagnostic = diagnostics[message.index];
+    const editor =
+        WorkspaceService
+            .getInstance()
+            .getStoredEditor();
+
+    if (!editor) {
+        return;
+    }
+
+    const diagnostics =
+        this.diagnosticsService.getDiagnostics();
+
+    const diagnostic =
+        diagnostics[message.index];
 
     if (!diagnostic) {
         return;
@@ -306,7 +345,6 @@ if (message.command === "explain") {
         });
 
         return;
-
     }
 
     this.panel.webview.postMessage({
@@ -344,7 +382,6 @@ if (message.command === "explain") {
 
     return;
 }
-
   });
 }
   /**
@@ -352,8 +389,6 @@ if (message.command === "explain") {
    */
   public refresh(): void {
 
-    this.explanationCache.clear();
-this.fixCache.clear();
     const diagnostics = this.diagnosticsService.getDiagnostics();
 
     console.log("REFRESH:", diagnostics.length);
@@ -1459,8 +1494,12 @@ if (cancelBtn) {
 
 
     const explainBtn = target.closest(".explain-btn");
+    //console.log("Explain clicked", index);
 
 if (explainBtn) {
+const index = explainBtn.dataset.index;
+
+    console.log("Explain clicked", index);
     setActiveButton(explainBtn);
    
     vscode.postMessage({
