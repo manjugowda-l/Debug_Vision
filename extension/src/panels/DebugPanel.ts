@@ -36,7 +36,6 @@ export class DebugPanel {
         }, 200);
 
     });
-
 this.editorListener =
     vscode.window.onDidChangeActiveTextEditor(editor => {
 
@@ -44,17 +43,22 @@ this.editorListener =
             return;
         }
 
+        // Ignore Output panel
+        if (
+            editor.document.uri.scheme !== "file"
+        ) {
+            return;
+        }
+
         WorkspaceService
             .getInstance()
             .setActiveEditor(editor);
 
-        // Refresh AFTER VS Code updates diagnostics
         setTimeout(() => {
             this.refresh();
         }, 200);
 
     });
-
     this.panel.onDidDispose(() => {
 
     this.diagnosticsListener?.dispose();

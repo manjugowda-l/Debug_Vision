@@ -29,12 +29,22 @@ export class DiagnosticsService {
   /**
    * Returns diagnostics for the current debug document.
    */
-  public getDiagnostics(): vscode.Diagnostic[] {
+ public getDiagnostics(): vscode.Diagnostic[] {
 
     const editor =
         WorkspaceService
             .getInstance()
             .getStoredEditor();
+
+    console.log(
+        "Stored Editor:",
+        editor?.document.fileName
+    );
+
+    console.log(
+        "Active Editor:",
+        vscode.window.activeTextEditor?.document.fileName
+    );
 
     if (!editor) {
         return [];
