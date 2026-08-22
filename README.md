@@ -175,7 +175,11 @@ extension/
 ├── package.json
 └── tsconfig.json
 ```
+## 📦 Install from VS Code Marketplace
 
+Search for **DebugVision** in the VS Code Extensions Marketplace and install it directly from VS Code.
+
+DebugVision uses Ollama for local AI processing. Make sure Ollama is installed and running before using AI features.
 ---
 
 ## 🚀 Getting Started
@@ -196,7 +200,7 @@ npm install
 ### 3. Build
 
 ```bash
-npm run compile
+npm run build
 ```
 
 ### 4. Start Ollama
@@ -209,7 +213,7 @@ Pull the model if required:
 
 ```bash
 # Pull your preferred model (example)
-ollama pull qwen2.5:7b
+ollama pull <your-model >
 ```
 
 ### 5. Run the extension
