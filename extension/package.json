@@ -2,7 +2,7 @@
   "name": "debugvision-extension",
   "displayName": "DebugVision",
   "description": "AI-powered intelligent debugging for VS Code",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "debugvision",
   "icon": "assets/icon.png",
   "license": "MIT",
