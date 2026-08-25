@@ -5,9 +5,8 @@
   "private": true,
   "license": "MIT",
   "workspaces": [
-    "extension",
-    "backend",
-    "shared"
+    "extension"
+    
   ],
   "scripts": {
     "build": "npm run build --workspaces",

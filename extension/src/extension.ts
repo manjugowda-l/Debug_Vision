@@ -29,7 +29,7 @@ export async function activate(
 
   const logger = extensionService.getLoggerService();
   const diagnosticsService = extensionService.getDiagnosticsService();
-
+  
   logger.info(`${extensionName} extension is now active (v${extensionVersion})`);
 
   // Register commands
